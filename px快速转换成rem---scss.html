@@ -1,0 +1,54 @@
+<title>px快速转换成rem---scss</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<img class="logo" src="logo.png">
+
+<x-markdown>
+rem这个CSS新相对单位的优点显而易见。但是真正使用的时候却会出现一点小麻烦。我们的设计稿通常是以像素为单位的。虽然px和rem的计算非常简单，但每次都需要就算，虽然在html中设置font-size:62.5%，能给我们带来便利，但终究有些烦人，也不是长远之计。既然刚学了SCSS，就试着它来自动化解决这个问题。
+### 解决方案
+>SCSS中的@function + 正则表达式
+
+##### @function
+根据rem的原理，设定了HTML根元素的font-size值，只需要相应的像素值除以font-size值即可。利用SCSS提供的@function写出这个函数
+```
+@function pxTorem($pixels) {
+    @return $pixels / $font_size+rem;
+}
+```
+SCSS编译前
+```
+div {
+    width: rem(100px);
+    height: rem(100px);
+}
+```
+编译之后
+```
+div {
+  width: 6.25rem;
+  height: 6.25rem; 
+}
+```
+这样一来，我们只需要改变HTMl根元素的font-size值，就可以实现不用计算就将px转换成rem。
+不过这样还是不够。虽然是不用计算了，但每次都要书写函数，还是挺麻烦的。这个时候就需要用上正则表达式了
+##### 正则表达式
+正则表达式对于批量处理文本简直就是神器。
+快速转换的正则表达式为：
+```
+([ :\(]{1})(-?\d{1,4})px，$1pxTorem($2px)
+```
+只需要使用这个正则表达式，就可以批量的把样式中的100px改成pxTorem(100)
+这样一来，我们写样式的时候就可以直接写量出来的像素值，然后自动转换成rem，提高我们的工作效率。
+##### 小结
+既然我们实现了批量的px转换成人，那就可以通过改变HTML根元素的font-size值(SCSS或JS)来实现对不同设备的适配。
+
+同时也有一些便捷的方式实现px和rem之间的转换
+1.使用在线工具：[http://520ued.com/tools/rem](http://520ued.com/tools/rem)
+http://mxd.tencent.com/wp-content/uploads/2014/11/rem.html
+2.插件(插件原理和上述基本一致)
+3.使用node Grunt 来执行转换(下一步的学习目标)
+</x-markdown>
+
+<link rel="stylesheet" href="css/default.css">
+<script src="js/marked.min.js"></script>
+<script src="js/main.js"></script>
